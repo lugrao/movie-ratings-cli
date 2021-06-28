@@ -2,4 +2,82 @@
 
 A minimal CLI version of [Movie Ratings](https://movie-ratings.vercel.app/).
 
-![screenshot](screenshot.jpg)
+## Usage
+Clone repository:
+```
+$ git clone https://github.com/lugrao/movie-ratings-cli.git
+```
+Go to repository directory:
+```
+$ cd movie-ratings-cli
+```
+
+Install dependencies:
+```
+$ pip install bs4 tmdbsimple
+```
+or with `pipenv`:
+```
+$ pipenv install bs4 tmdbsimple
+```
+
+Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started/introduction), and your OMDB API key [here](http://www.omdbapi.com/apikey.aspx).
+
+Export them as environment variables:
+```
+$ export TMDB_KEY=<your TMDB key>
+$ export OMDB_KEY=<your OMDB key>
+```
+Make `movie_ratings.py` executable:
+```
+$ chmod +x movie_ratings.py
+```
+Search movie by title:
+```
+$ ./movie_ratings.py Rocky
+
+Searching for "Rocky"...
+
+
+Rocky (1976)
+
+IMDb rating:...................8.1/10
+RottenTomatoes rating:.........92%
+Metacritic rating:.............70/100
+Letterboxd rating:.............4.0/5
+TMDb rating:...................7.8/10
+FilmAffinity rating:...........7.1/10
+```
+Search movie by title and year:
+```
+$ ./movie_ratings.py Batman 1989
+
+Searching for "Batman 1989"...
+
+
+Batman (1989)
+
+IMDb rating:...................7.5/10
+RottenTomatoes rating:.........71%
+Metacritic rating:.............69/100
+Letterboxd rating:.............3.6/5
+TMDb rating:...................7.2/10
+FilmAffinity rating:...........6.8/10
+```
+
+If you're using `pipenv`:
+```
+$ pipenv run ./movie_ratings.py 'The Godfather'
+
+Searching for "The Godfather"...
+
+
+The Godfather (1972)
+
+IMDb rating:...................9.2/10
+RottenTomatoes rating:.........97%
+Metacritic rating:.............100/100
+Letterboxd rating:.............4.5/5
+TMDb rating:...................8.7/10
+FilmAffinity rating:...........9.0/10
+```
