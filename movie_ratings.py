@@ -158,7 +158,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
 
 if len(sys.argv) not in [2, 3]:
     print("\nUsage: ./movie_ratings.py <movie_title> [<release_year>]\n")
-    sys.exit(1)
+    sys.exit(0)
 
 title = sys.argv[1]
 year = ''
