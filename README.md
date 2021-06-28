@@ -25,8 +25,8 @@ Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started
 
 Export them as environment variables:
 ```
-$ export TMDB_KEY=<your TMDB key>
-$ export OMDB_KEY=<your OMDB key>
+$ export TMDB_KEY=<your_TMDB_key>
+$ export OMDB_KEY=<your_OMDB_key>
 ```
 Make `movie_ratings.py` executable:
 ```
