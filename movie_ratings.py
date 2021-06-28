@@ -19,7 +19,7 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
         try:
             movie_id = res['results'][0]['id']
         except:
-            return None, None
+            return None
 
     movie_result = tmdb.Movies(movie_id)
     movie = movie_result.info()
@@ -28,9 +28,9 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
     year = f'{movie["release_date"][:4]}' if movie['release_date'] else ''
     alternative_titles = [i['title'] for i in movie_result.alternative_titles()[
         'titles'] if i['iso_3166_1'] in ['GB', 'US']]
-    letterboxd_rating, letterboxd_url = get_letterboxd_rating(
+    letterboxd_rating = get_letterboxd_rating(
         movie_id, movie['title'], year)
-    filmaffinity_rating, filmaffinity_url = get_filmaffinity_rating(
+    filmaffinity_rating = get_filmaffinity_rating(
         movie['title'], movie['original_title'], alternative_titles, year)
 
     movie_data = {
@@ -89,22 +89,15 @@ def get_omdb_data(imdb_id):
 
 
 def get_letterboxd_rating(tmdb_id, title='', year=''):
-    movie_url = None
-
     try:
         search_res = requests.get(f'https://letterboxd.com/tmdb/{tmdb_id}')
         search_soup = BeautifulSoup(search_res.text, 'html.parser')
-        movie_url = search_soup.find_all(
-            attrs={'name': 'twitter:url'})[0]['content']
         movie_rating = round(float(search_soup.find_all(
             attrs={'name': 'twitter:data2'})[0]['content'].split()[0]), 1)
 
-        return [str(movie_rating) + '/5', movie_rating * 2], movie_url
+        return [str(movie_rating) + '/5', movie_rating * 2]
     except:
-        url = f'https://letterboxd.com/search/{title} {year}'
-        if movie_url:
-            url = movie_url
-        return ['Not found', -1], url
+        return ['Not found', -1]
 
 
 def get_filmaffinity_rating(title, original_title, alternative_titles, year):
@@ -115,14 +108,14 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
 
     url = f'https://www.filmaffinity.com/en/search.php?stype=title&stext={title}'
     rating = None
-    movie_url = None
     title = clean(title)
     original_title = clean(original_title)
+
     try:
         res = requests.get(url)
         soup = BeautifulSoup(res.text, 'html.parser')
     except:
-        return ['Not found', -1], url
+        return ['Not found', -1]
 
     results = soup.find_all('div', class_='se-it mt')
 
@@ -135,7 +128,6 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
 
                 if (clean(t) in titles or t in alternative_titles) and y == year:
                     rating = movie.find('div', class_='avgrat-box').text
-                    movie_url = movie.a.get('href')
                     break
         except:
             pass
@@ -155,18 +147,16 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
             if year == y and (title in titles or original_title in titles or t in alternative_titles):
                 rating = soup.find_all(
                     'div', {'id': 'movie-rat-avg'})[0].text.strip()
-                movie_url = soup.find_all('link', {'rel': 'canonical'})[
-                    0].get('href')
         except:
             pass
 
     try:
-        return [f'{rating}/10', float(rating)], movie_url
+        return [f'{rating}/10', float(rating)]
     except:
-        return ['Not found', -1], url
+        return ['Not found', -1]
 
 
-if len(sys.argv) == 1:
+if len(sys.argv) not in [2, 3]:
     print("\nUsage: ./movie_ratings.py <movie_title> [<release_year>]\n")
     sys.exit(1)
 
@@ -180,6 +170,9 @@ else:
     print(f'\nSearching for "{title}"...')
 
 movie = get_movie(title, year)
+if not movie:
+    print("\nMovie not found.\n")
+    sys.exit(0)
 
 print(f"\n\n{movie['title']} ({movie['year']})\n"
       f"\nIMDb rating:...................{movie['imdb-rating'][0]}\n"
