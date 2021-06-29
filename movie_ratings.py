@@ -158,6 +158,18 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         return ['Not found', -1]
 
 
+def get_average_rating(movie):
+    rating_sum = 0
+    rating_count = 0
+
+    for key in movie:
+        if 'rating' in key and movie[key][1] > 0:
+            rating_sum += movie[key][1]
+            rating_count += 1
+
+    return round(rating_sum / rating_count, 1)
+
+
 if len(sys.argv) not in [2, 3]:
     print("\nUsage: ./movie_ratings.py <movie_title> [<release_year>]\n")
     sys.exit(0)
@@ -176,10 +188,13 @@ if not movie:
     print("\nMovie not found.\n")
     sys.exit(0)
 
+average_rating = get_average_rating(movie)
+
 print(f"\n\n{movie['title']} ({movie['year']})\n"
-      f"\nIMDb rating:...................{movie['imdb-rating'][0]}\n"
-      f"RottenTomatoes rating:.........{movie['rotten-tomatoes-rating'][0]}\n"
-      f"Metacritic rating:.............{movie['metacritic-rating'][0]}\n"
-      f"Letterboxd rating:.............{movie['letterboxd-rating'][0]}\n"
-      f"TMDb rating:...................{movie['tmdb-rating'][0]}\n"
-      f"FilmAffinity rating:...........{movie['filmaffinity-rating'][0]}\n")
+      f"\nIMDb rating:{' ' * (25 - len(movie['imdb-rating'][0]) - 4 )}{movie['imdb-rating'][0]}\n"
+      f"RottenTomatoes rating:{' ' * (25 - len(movie['rotten-tomatoes-rating'][0]) - 14)}{movie['rotten-tomatoes-rating'][0]}\n"
+      f"Metacritic rating:{' ' * (25 - len(movie['metacritic-rating'][0]) - 10)}{movie['metacritic-rating'][0]}\n"
+      f"Letterboxd rating:{' ' * (25 - len(movie['letterboxd-rating'][0]) - 10)}{movie['letterboxd-rating'][0]}\n"
+      f"TMDb rating:{' ' * (25 - len(movie['tmdb-rating'][0]) - 4)}{movie['tmdb-rating'][0]}\n"
+      f"FilmAffinity rating:{' ' * (25 - len(movie['filmaffinity-rating'][0]) - 12)}{movie['filmaffinity-rating'][0]}\n"
+      f"\nAverage rating:{' ' * (25 - 10)}{average_rating}\n\n")
