@@ -55,10 +55,9 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
 
 
 def get_omdb_data(imdb_id):
-    omdb_key = OMDB_KEY
 
     try:
-        url = f'http://www.omdbapi.com/?apikey={omdb_key}&i={imdb_id}'
+        url = f'http://www.omdbapi.com/?apikey={OMDB_KEY}&i={imdb_id}'
         response = requests.get(url)
         response.raise_for_status()
     except requests.RequestException:
