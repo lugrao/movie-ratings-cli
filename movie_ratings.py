@@ -7,9 +7,12 @@ import requests
 import tmdbsimple as tmdb
 from bs4 import BeautifulSoup
 
+TMDB_KEY = os.environ.get('TMDB_KEY')
+OMDB_KEY = os.environ.get('OMDB_KEY')
+
 
 def get_movie(title='', year='', tmdb_id='', imdb_id=''):
-    tmdb.API_KEY = os.environ.get('TMDB_KEY')
+    tmdb.API_KEY = TMDB_KEY
 
     movie_id = tmdb_id
     if not movie_id:
@@ -52,7 +55,7 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
 
 
 def get_omdb_data(imdb_id):
-    omdb_key = os.environ.get('OMDB_KEY')
+    omdb_key = OMDB_KEY
 
     try:
         url = f'http://www.omdbapi.com/?apikey={omdb_key}&i={imdb_id}'
