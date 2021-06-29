@@ -197,4 +197,4 @@ print(f"\n\n{movie['title']} ({movie['year']})\n"
       f"Letterboxd rating:{' ' * (25 - len(movie['letterboxd-rating'][0]) - 10)}{movie['letterboxd-rating'][0]}\n"
       f"TMDb rating:{' ' * (25 - len(movie['tmdb-rating'][0]) - 4)}{movie['tmdb-rating'][0]}\n"
       f"FilmAffinity rating:{' ' * (25 - len(movie['filmaffinity-rating'][0]) - 12)}{movie['filmaffinity-rating'][0]}\n"
-      f"\nAverage rating:{' ' * (25 - 10)}{average_rating}\n\n")
+      f"\nAverage rating:{' ' * (25 - 10)}{average_rating}\n")
