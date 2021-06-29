@@ -28,6 +28,8 @@ Export them as environment variables:
 $ export TMDB_KEY=<your_TMDB_key>
 $ export OMDB_KEY=<your_OMDB_key>
 ```
+or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
+
 Make `movie_ratings.py` executable:
 ```
 $ chmod +x movie_ratings.py
