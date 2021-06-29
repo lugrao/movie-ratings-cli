@@ -2,7 +2,8 @@
 
 A minimal CLI version of [Movie Ratings](https://movie-ratings.vercel.app/).
 
-## Usage
+## Set up
+
 Clone repository:
 ```
 $ git clone https://github.com/lugrao/movie-ratings-cli.git
@@ -34,6 +35,9 @@ Make `movie_ratings.py` executable:
 ```
 $ chmod +x movie_ratings.py
 ```
+
+## Usage
+
 Search movie by title:
 ```
 $ ./movie_ratings.py Rocky
