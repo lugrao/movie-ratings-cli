@@ -21,7 +21,7 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
 
         try:
             movie_id = res['results'][0]['id']
-        except:
+        except (IndexError, ValueError, KeyError):
             return None
 
     movie_result = tmdb.Movies(movie_id)
@@ -68,19 +68,19 @@ def get_omdb_data(imdb_id):
     try:
         imdb = movie['Ratings'][0]['Value']
         imdb = [imdb, float(imdb.split('/')[0])]
-    except (IndexError, ValueError, KeyError):
+    except (IndexError, ValueError, KeyError, TypeError):
         imdb = ['Not found', -1]
 
     try:
         rotten_tomatoes = movie['Ratings'][1]['Value']
         rotten_tomatoes = [rotten_tomatoes, float(rotten_tomatoes[:-1]) / 10]
-    except (IndexError, ValueError, KeyError):
+    except (IndexError, ValueError, KeyError, TypeError):
         rotten_tomatoes = ['Not found', -1]
 
     try:
         metacritic = movie['Ratings'][2]['Value']
         metacritic = [metacritic, float(metacritic.split('/')[0]) / 10]
-    except (IndexError, ValueError, KeyError):
+    except (IndexError, ValueError, KeyError, TypeError):
         metacritic = ['Not found', -1]
 
     return {
@@ -98,7 +98,7 @@ def get_letterboxd_rating(tmdb_id, title='', year=''):
             attrs={'name': 'twitter:data2'})[0]['content'].split()[0]), 1)
 
         return [str(movie_rating) + '/5', movie_rating * 2]
-    except:
+    except (requests.RequestException, IndexError, ValueError, KeyError, TypeError):
         return ['Not found', -1]
 
 
@@ -116,7 +116,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
     try:
         res = requests.get(url)
         soup = BeautifulSoup(res.text, 'html.parser')
-    except:
+    except requests.RequestException:
         return ['Not found', -1]
 
     results = soup.find_all('div', class_='se-it mt')
@@ -131,7 +131,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                 if (clean(t) in titles or t in alternative_titles) and y == year:
                     rating = movie.find('div', class_='avgrat-box').text
                     break
-        except:
+        except (IndexError, ValueError, KeyError):
             pass
     else:
         try:
@@ -143,18 +143,18 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
             try:
                 for i in soup.find_all('dd', class_='akas')[0].ul.find_all('li'):
                     titles.append(clean(i.text))
-            except:
+            except (IndexError, ValueError, KeyError):
                 pass
 
             if year == y and (title in titles or original_title in titles or t in alternative_titles):
                 rating = soup.find_all(
                     'div', {'id': 'movie-rat-avg'})[0].text.strip()
-        except:
+        except (IndexError, ValueError, KeyError):
             pass
 
     try:
         return [f'{rating}/10', float(rating)]
-    except:
+    except (IndexError, ValueError, KeyError, TypeError):
         return ['Not found', -1]
 
 
