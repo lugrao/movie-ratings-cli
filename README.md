@@ -47,12 +47,14 @@ Searching for "Rocky"...
 
 Rocky (1976)
 
-IMDb rating:...................8.1/10
-RottenTomatoes rating:.........92%
-Metacritic rating:.............70/100
-Letterboxd rating:.............4.0/5
-TMDb rating:...................7.8/10
-FilmAffinity rating:...........7.1/10
+IMDb rating:               8.1/10
+RottenTomatoes rating:        92%
+Metacritic rating:         70/100
+Letterboxd rating:          4.0/5
+TMDb rating:               7.8/10
+FilmAffinity rating:       7.1/10
+
+Average rating:               7.9
 ```
 Search movie by title and year:
 ```
@@ -63,12 +65,14 @@ Searching for "Batman 1989"...
 
 Batman (1989)
 
-IMDb rating:...................7.5/10
-RottenTomatoes rating:.........71%
-Metacritic rating:.............69/100
-Letterboxd rating:.............3.6/5
-TMDb rating:...................7.2/10
-FilmAffinity rating:...........6.8/10
+IMDb rating:               7.5/10
+RottenTomatoes rating:        71%
+Metacritic rating:         69/100
+Letterboxd rating:          3.6/5
+TMDb rating:               7.2/10
+FilmAffinity rating:       6.8/10
+
+Average rating:               7.1
 ```
 
 If you're using `pipenv`:
@@ -80,10 +84,12 @@ Searching for "The Godfather"...
 
 The Godfather (1972)
 
-IMDb rating:...................9.2/10
-RottenTomatoes rating:.........97%
-Metacritic rating:.............100/100
-Letterboxd rating:.............4.5/5
-TMDb rating:...................8.7/10
-FilmAffinity rating:...........9.0/10
+IMDb rating:               9.2/10
+RottenTomatoes rating:        97%
+Metacritic rating:        100/100
+Letterboxd rating:          4.5/5
+TMDb rating:               8.7/10
+FilmAffinity rating:       9.0/10
+
+Average rating:               9.3
 ```
