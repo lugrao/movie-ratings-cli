@@ -98,8 +98,6 @@ def get_omdb_data(imdb_id):
 
 
 def get_rottentomatoes_rating(title, year):
-    print('Searching RottenTomatoes rating...')
-
     rating = ['Not found', -1]
 
     if not year:
@@ -141,8 +139,6 @@ def get_rottentomatoes_rating(title, year):
 
 
 def get_metacritic_rating(title, year):
-    print('Searching Metacritic rating...')
-
     url = f'https://www.metacritic.com/search/movie/{title}/results'
     rating = None
     user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37'
