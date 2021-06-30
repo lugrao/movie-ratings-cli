@@ -21,7 +21,7 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
 
         try:
             movie_id = res['results'][0]['id']
-        except (IndexError, ValueError, KeyError):
+        except (IndexError, KeyError):
             return None
 
     movie_result = tmdb.Movies(movie_id)
@@ -31,31 +31,38 @@ def get_movie(title='', year='', tmdb_id='', imdb_id=''):
     year = f'{movie["release_date"][:4]}' if movie['release_date'] else ''
     alternative_titles = [i['title'] for i in movie_result.alternative_titles()[
         'titles'] if i['iso_3166_1'] in ['GB', 'US']]
+
+    rottentomatoes_rating = omdb['rottentomatoes_rating']
+    if rottentomatoes_rating[0] == 'Not found':
+        rottentomatoes_rating = get_rottentomatoes_rating(movie['title'], year)
+
+    metacritic_rating = omdb['metacritic_rating']
+    if metacritic_rating[0] == 'Not found':
+        metacritic_rating = get_metacritic_rating(movie['title'], year)
+
     letterboxd_rating = get_letterboxd_rating(
         movie_id, movie['title'], year)
+
     filmaffinity_rating = get_filmaffinity_rating(
         movie['title'], movie['original_title'], alternative_titles, year)
 
-    movie_data = {
+    return {
         'title': movie['title'],
         'original_title': movie['original_title'],
         'alternative_titles': alternative_titles,
         'year': year,
         'imdb-id': movie['imdb_id'],
         'imdb-rating': omdb['imdb_rating'],
-        'rotten-tomatoes-rating': omdb['rotten_tomatoes_rating'],
-        'metacritic-rating': omdb['metacritic_rating'],
+        'rotten-tomatoes-rating': rottentomatoes_rating,
+        'metacritic-rating': metacritic_rating,
         'letterboxd-rating': letterboxd_rating,
         'tmdb-id': movie_id,
         'tmdb-rating': [str(movie['vote_average']) + '/10', float(movie['vote_average'])] if movie['vote_count'] > 0 else ['Not found', -1],
         'filmaffinity-rating': filmaffinity_rating
     }
 
-    return movie_data
-
 
 def get_omdb_data(imdb_id):
-
     try:
         url = f'http://www.omdbapi.com/?apikey={OMDB_KEY}&i={imdb_id}'
         response = requests.get(url)
@@ -68,26 +75,99 @@ def get_omdb_data(imdb_id):
     try:
         imdb = movie['Ratings'][0]['Value']
         imdb = [imdb, float(imdb.split('/')[0])]
-    except (IndexError, ValueError, KeyError, TypeError):
+    except (IndexError, KeyError, ValueError, TypeError):
         imdb = ['Not found', -1]
 
     try:
         rotten_tomatoes = movie['Ratings'][1]['Value']
         rotten_tomatoes = [rotten_tomatoes, float(rotten_tomatoes[:-1]) / 10]
-    except (IndexError, ValueError, KeyError, TypeError):
+    except (IndexError, KeyError, ValueError, TypeError):
         rotten_tomatoes = ['Not found', -1]
 
     try:
         metacritic = movie['Ratings'][2]['Value']
         metacritic = [metacritic, float(metacritic.split('/')[0]) / 10]
-    except (IndexError, ValueError, KeyError, TypeError):
+    except (IndexError, KeyError, ValueError, TypeError):
         metacritic = ['Not found', -1]
 
     return {
         'imdb_rating': imdb,
-        'rotten_tomatoes_rating': rotten_tomatoes,
+        'rottentomatoes_rating': rotten_tomatoes,
         'metacritic_rating': metacritic,
     }
+
+
+def get_rottentomatoes_rating(title, year):
+    print('Searching RottenTomatoes rating...')
+
+    rating = ['Not found', -1]
+
+    if not year:
+        return rating
+
+    req_count = 0
+    while req_count < 3:
+        next_page = ''
+        url = f'https://www.rottentomatoes.com/napi/search/all?type=movie&searchQuery={title}&after={next_page}'
+
+        try:
+            res = requests.get(url)
+            data = res.json()
+            req_count += 1
+        except requests.RequestException:
+            return rating
+
+        if not data['movies']['items']:
+            break
+
+        for movie in data['movies']['items']:
+            try:
+                if movie['name'] == title and movie['releaseYear'] == year:
+                    if movie['tomatometerScore']:
+                        rating = movie['tomatometerScore']['score']
+                        rating = [f'{rating}%', float(rating) / 10]
+                    break
+            except (KeyError, ValueError, TypeError):
+                continue
+
+        if not data['movies']['pageInfo']['endCursor']:
+            break
+        next_page = data['movies']['pageInfo']['endCursor']
+
+        if rating:
+            break
+
+    return rating
+
+
+def get_metacritic_rating(title, year):
+    print('Searching Metacritic rating...')
+
+    url = f'https://www.metacritic.com/search/movie/{title}/results'
+    rating = None
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37'
+
+    if not year:
+        return ['No found', -1]
+
+    try:
+        res = requests.get(url, headers={'User-Agent': user_agent})
+        soup = BeautifulSoup(res.text, 'html.parser')
+        results = soup.find_all('div', class_='result_wrap')
+    except requests.RequestException:
+        return ['No found', -1]
+
+    for movie in results:
+        t = movie.a.text.strip()
+        y = movie.p.text.strip()[-4:]
+        if t == title and y == year:
+            rating = movie.span.text
+            break
+
+    try:
+        return [f'{rating}/100', float(rating) / 10]
+    except (TypeError, ValueError):
+        return ['Not found', -1]
 
 
 def get_letterboxd_rating(tmdb_id, title='', year=''):
@@ -96,9 +176,8 @@ def get_letterboxd_rating(tmdb_id, title='', year=''):
         search_soup = BeautifulSoup(search_res.text, 'html.parser')
         movie_rating = round(float(search_soup.find_all(
             attrs={'name': 'twitter:data2'})[0]['content'].split()[0]), 1)
-
         return [str(movie_rating) + '/5', movie_rating * 2]
-    except (requests.RequestException, IndexError, ValueError, KeyError, TypeError):
+    except (requests.RequestException, IndexError, KeyError, ValueError, AttributeError):
         return ['Not found', -1]
 
 
@@ -131,7 +210,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                 if (clean(t) in titles or t in alternative_titles) and y == year:
                     rating = movie.find('div', class_='avgrat-box').text
                     break
-        except (IndexError, ValueError, KeyError):
+        except (IndexError, AttributeError):
             pass
     else:
         try:
@@ -143,18 +222,18 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
             try:
                 for i in soup.find_all('dd', class_='akas')[0].ul.find_all('li'):
                     titles.append(clean(i.text))
-            except (IndexError, ValueError, KeyError):
+            except (IndexError, AttributeError):
                 pass
 
             if year == y and (title in titles or original_title in titles or t in alternative_titles):
                 rating = soup.find_all(
                     'div', {'id': 'movie-rat-avg'})[0].text.strip()
-        except (IndexError, ValueError, KeyError):
+        except (IndexError, AttributeError):
             pass
 
     try:
         return [f'{rating}/10', float(rating)]
-    except (IndexError, ValueError, KeyError, TypeError):
+    except (ValueError, TypeError):
         return ['Not found', -1]
 
 
