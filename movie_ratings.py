@@ -113,7 +113,8 @@ def get_rottentomatoes_rating(title, year):
     req_count = 0
     while req_count < 3:
         next_page = ""
-        url = f"https://www.rottentomatoes.com/napi/search/all?type=movie&searchQuery={title}&after={next_page}"
+        url = f"https://www.rottentomatoes.com/napi/search/all?type=movie\
+            &searchQuery={title}&after={next_page}"
 
         try:
             res = requests.get(url)
@@ -122,7 +123,7 @@ def get_rottentomatoes_rating(title, year):
         except requests.RequestException:
             return rating
 
-        if not data["movies"]["items"]:
+        if not data["movies"]:
             break
 
         for movie in data["movies"]["items"]:
@@ -148,7 +149,8 @@ def get_rottentomatoes_rating(title, year):
 def get_metacritic_rating(title, year):
     url = f"https://www.metacritic.com/search/movie/{title}/results"
     rating = None
-    user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 \
+        (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
 
     if not year:
         return ["No found", -1]
@@ -202,7 +204,8 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         title = re.sub(r"[\(\[].*?[\)\]]|[^a-z0-9]", "", title)
         return title
 
-    url = f"https://www.filmaffinity.com/en/search.php?stype=title&stext={title}"
+    url = f"https://www.filmaffinity.com/en/search.php?stype=title\
+        &stext={title}"
     rating = None
     title = clean(title)
     original_title = clean(original_title)
@@ -222,7 +225,8 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                 y = movie.find("div", class_="ye-w").text
                 titles = [title, original_title]
 
-                if (clean(t) in titles or t in alternative_titles) and y == year:
+                if (clean(t) in titles
+                        or t in alternative_titles) and y == year:
                     rating = movie.find("div", class_="avgrat-box").text
                     break
         except (IndexError, AttributeError):
@@ -230,19 +234,25 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
     else:
         try:
             t = soup.find_all("h1", {"id": "main-title"})[0].text
-            ot = clean(soup.find_all("dl", class_="movie-info")[0].dd.contents[0])
+            ot = clean(
+                soup.find_all("dl", class_="movie-info")[0].dd.contents[0]
+            )
             y = soup.find_all("dd", {"itemprop": "datePublished"})[0].text
             titles = [clean(t), ot]
             try:
-                for i in soup.find_all("dd", class_="akas")[0].ul.find_all("li"):
+                for i in soup.find_all("dd", class_="akas")[0]\
+                        .ul.find_all("li"):
                     titles.append(clean(i.text))
             except (IndexError, AttributeError):
                 pass
 
             if year == y and (
-                title in titles or original_title in titles or t in alternative_titles
+                title in titles
+                or original_title in titles
+                or t in alternative_titles
             ):
-                rating = soup.find_all("div", {"id": "movie-rat-avg"})[0].text.strip()
+                rating = soup.find_all("div", {"id": "movie-rat-avg"})[0]\
+                    .text.strip()
         except (IndexError, AttributeError):
             pass
 
@@ -261,7 +271,14 @@ def get_average_rating(movie):
             rating_sum += movie[key][1]
             rating_count += 1
 
-    return round(rating_sum / rating_count, 1)
+    if rating_count > 0:
+        return round(rating_sum / rating_count, 1)
+    return 'No rating'
+
+
+def format_rating(site, rating):
+    spaces = f"{' ' * (25 - len(rating) - len(site))}"
+    return f"{site} rating:{spaces + rating}"
 
 
 if len(sys.argv) not in [2, 3]:
@@ -284,13 +301,14 @@ if not movie:
 
 average_rating = get_average_rating(movie)
 
+
 print(
-    f"\n\n{movie['title']} ({movie['year']})\n"
-    f"\nIMDb rating:{' ' * (25 - len(movie['imdb-rating'][0]) - 4 )}{movie['imdb-rating'][0]}\n"
-    f"RottenTomatoes rating:{' ' * (25 - len(movie['rotten-tomatoes-rating'][0]) - 14)}{movie['rotten-tomatoes-rating'][0]}\n"
-    f"Metacritic rating:{' ' * (25 - len(movie['metacritic-rating'][0]) - 10)}{movie['metacritic-rating'][0]}\n"
-    f"Letterboxd rating:{' ' * (25 - len(movie['letterboxd-rating'][0]) - 10)}{movie['letterboxd-rating'][0]}\n"
-    f"TMDb rating:{' ' * (25 - len(movie['tmdb-rating'][0]) - 4)}{movie['tmdb-rating'][0]}\n"
-    f"FilmAffinity rating:{' ' * (25 - len(movie['filmaffinity-rating'][0]) - 12)}{movie['filmaffinity-rating'][0]}\n"
-    f"\nAverage rating:{' ' * (25 - 10)}{average_rating}\n"
+    f"\n\n{movie['title']} ({movie['year']})\n\n"
+    f"{format_rating('IMDb', movie['imdb-rating'][0])}\n"
+    f"{format_rating('RottenTomatoes', movie['rotten-tomatoes-rating'][0])}\n"
+    f"{format_rating('Metacritic', movie['metacritic-rating'][0])}\n"
+    f"{format_rating('Letterboxd', movie['letterboxd-rating'][0])}\n"
+    f"{format_rating('TMDb', movie['tmdb-rating'][0])}\n"
+    f"{format_rating('FilmAffinity', movie['filmaffinity-rating'][0])}\n\n"
+    f"{format_rating('Average', str(average_rating))}\n"
 )
