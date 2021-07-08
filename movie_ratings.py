@@ -114,7 +114,7 @@ def get_rottentomatoes_rating(title, year):
     while req_count < 3:
         next_page = ""
         url = f"https://www.rottentomatoes.com/napi/search/all?type=movie\
-            &searchQuery={title}&after={next_page}"
+        &searchQuery={title}&after={next_page}"
 
         try:
             res = requests.get(url)
@@ -150,7 +150,7 @@ def get_metacritic_rating(title, year):
     url = f"https://www.metacritic.com/search/movie/{title}/results"
     rating = None
     user_agent = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 \
-        (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
+    (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
 
     if not year:
         return ["No found", -1]
@@ -205,7 +205,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         return title
 
     url = f"https://www.filmaffinity.com/en/search.php?stype=title\
-        &stext={title}"
+    &stext={title}"
     rating = None
     title = clean(title)
     original_title = clean(original_title)
