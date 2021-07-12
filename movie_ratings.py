@@ -21,7 +21,7 @@ def get_movie(title="", year="", tmdb_id="", imdb_id=""):
 
         try:
             movie_id = res["results"][0]["id"]
-        except (IndexError, KeyError):
+        except Exception:
             return None
 
     movie_result = tmdb.Movies(movie_id)
@@ -82,19 +82,19 @@ def get_omdb_data(imdb_id):
     try:
         imdb = movie["Ratings"][0]["Value"]
         imdb = [imdb, float(imdb.split("/")[0])]
-    except (IndexError, KeyError, ValueError, TypeError):
+    except Exception:
         imdb = ["Not found", -1]
 
     try:
         rotten_tomatoes = movie["Ratings"][1]["Value"]
         rotten_tomatoes = [rotten_tomatoes, float(rotten_tomatoes[:-1]) / 10]
-    except (IndexError, KeyError, ValueError, TypeError):
+    except Exception:
         rotten_tomatoes = ["Not found", -1]
 
     try:
         metacritic = movie["Ratings"][2]["Value"]
         metacritic = [metacritic, float(metacritic.split("/")[0]) / 10]
-    except (IndexError, KeyError, ValueError, TypeError):
+    except Exception:
         metacritic = ["Not found", -1]
 
     return {
@@ -133,7 +133,7 @@ def get_rottentomatoes_rating(title, year):
                         rating = movie["tomatometerScore"]["score"]
                         rating = [f"{rating}%", float(rating) / 10]
                     break
-            except (KeyError, ValueError, TypeError):
+            except Exception:
                 continue
 
         if not data["movies"]["pageInfo"]["endCursor"]:
@@ -171,7 +171,7 @@ def get_metacritic_rating(title, year):
 
     try:
         return [f"{rating}/100", float(rating) / 10]
-    except (TypeError, ValueError):
+    except Exception:
         return ["Not found", -1]
 
 
@@ -188,13 +188,7 @@ def get_letterboxd_rating(tmdb_id, title="", year=""):
             1,
         )
         return [str(movie_rating) + "/5", movie_rating * 2]
-    except (
-        requests.RequestException,
-        IndexError,
-        KeyError,
-        ValueError,
-        AttributeError,
-    ):
+    except Exception:
         return ["Not found", -1]
 
 
@@ -229,7 +223,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                         or t in alternative_titles) and y == year:
                     rating = movie.find("div", class_="avgrat-box").text
                     break
-        except (IndexError, AttributeError):
+        except Exception:
             pass
     else:
         try:
@@ -243,7 +237,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                 for i in soup.find_all("dd", class_="akas")[0]\
                         .ul.find_all("li"):
                     titles.append(clean(i.text))
-            except (IndexError, AttributeError):
+            except Exception:
                 pass
 
             if year == y and (
@@ -253,12 +247,12 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
             ):
                 rating = soup.find_all("div", {"id": "movie-rat-avg"})[0]\
                     .text.strip()
-        except (IndexError, AttributeError):
+        except Exception:
             pass
 
     try:
         return [f"{rating}/10", float(rating)]
-    except (ValueError, TypeError):
+    except Exception:
         return ["Not found", -1]
 
 
@@ -281,34 +275,41 @@ def format_rating(site, rating):
     return f"{site} rating:{spaces + rating}"
 
 
-if len(sys.argv) not in [2, 3]:
-    print("\nUsage: ./movie_ratings.py <movie_title> [<release_year>]\n")
-    sys.exit(0)
+def main():
+    if len(sys.argv) not in [2, 3]:
+        print("\nUsage: movie_ratings.py <movie_title> [<release_year>]\n")
+        sys.exit(1)
 
-title = sys.argv[1]
-year = ""
+    title = sys.argv[1]
+    year = ""
 
-if len(sys.argv) == 3:
-    year = sys.argv[2]
-    print(f'\nSearching for "{title} {year}"...')
-else:
-    print(f'\nSearching for "{title}"...')
+    if len(sys.argv) == 3:
+        year = sys.argv[2]
+        print(f'\nSearching for "{title} {year}"...')
+    else:
+        print(f'\nSearching for "{title}"...')
 
-movie = get_movie(title, year)
-if not movie:
-    print("\nMovie not found.\n")
-    sys.exit(0)
+    movie = get_movie(title, year)
+    if not movie:
+        print("\nMovie not found.\n")
+        sys.exit(0)
 
-average_rating = get_average_rating(movie)
+    average_rating = get_average_rating(movie)
+
+    print(
+        f"\n\n{movie['title']} ({movie['year']})\n\n"
+        f"{format_rating('IMDb', movie['imdb-rating'][0])}\n"
+        f"{format_rating('RottenTomatoes', movie['rotten-tomatoes-rating'][0])}\n"
+        f"{format_rating('Metacritic', movie['metacritic-rating'][0])}\n"
+        f"{format_rating('Letterboxd', movie['letterboxd-rating'][0])}\n"
+        f"{format_rating('TMDb', movie['tmdb-rating'][0])}\n"
+        f"{format_rating('FilmAffinity', movie['filmaffinity-rating'][0])}\n\n"
+        f"{format_rating('Average', str(average_rating))}\n"
+    )
 
 
-print(
-    f"\n\n{movie['title']} ({movie['year']})\n\n"
-    f"{format_rating('IMDb', movie['imdb-rating'][0])}\n"
-    f"{format_rating('RottenTomatoes', movie['rotten-tomatoes-rating'][0])}\n"
-    f"{format_rating('Metacritic', movie['metacritic-rating'][0])}\n"
-    f"{format_rating('Letterboxd', movie['letterboxd-rating'][0])}\n"
-    f"{format_rating('TMDb', movie['tmdb-rating'][0])}\n"
-    f"{format_rating('FilmAffinity', movie['filmaffinity-rating'][0])}\n\n"
-    f"{format_rating('Average', str(average_rating))}\n"
-)
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nExited on keyboard interrupt.")
