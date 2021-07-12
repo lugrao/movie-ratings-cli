@@ -8,6 +8,7 @@ Clone repository:
 ```
 $ git clone https://github.com/lugrao/movie-ratings-cli.git
 ```
+
 Go to repository directory:
 ```
 $ cd movie-ratings-cli
@@ -17,6 +18,7 @@ Install dependencies:
 ```
 $ pip install bs4 tmdbsimple
 ```
+
 or with `pipenv`:
 ```
 $ pipenv install bs4 tmdbsimple
@@ -29,18 +31,14 @@ Export them as environment variables:
 $ export TMDB_KEY=<your_TMDB_key>
 $ export OMDB_KEY=<your_OMDB_key>
 ```
-or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
 
-Make `movie_ratings.py` executable:
-```
-$ chmod +x movie_ratings.py
-```
+or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
 
 ## Usage
 
 Search movie by title:
 ```
-$ ./movie_ratings.py Rocky
+$ python movie_ratings.py Rocky
 
 Searching for "Rocky"...
 
@@ -56,9 +54,10 @@ FilmAffinity rating:       7.1/10
 
 Average rating:               7.9
 ```
+
 Search movie by title and year:
 ```
-$ ./movie_ratings.py Batman 1989
+$ python movie_ratings.py Batman 1989
 
 Searching for "Batman 1989"...
 
@@ -77,7 +76,7 @@ Average rating:               7.1
 
 If you're using `pipenv`:
 ```
-$ pipenv run ./movie_ratings.py 'The Godfather'
+$ pipenv run python movie_ratings.py 'The Godfather'
 
 Searching for "The Godfather"...
 
