@@ -299,7 +299,8 @@ def main():
     print(
         f"\n\n{movie['title']} ({movie['year']})\n\n"
         f"{format_rating('IMDb', movie['imdb-rating'][0])}\n"
-        f"{format_rating('RottenTomatoes', movie['rotten-tomatoes-rating'][0])}\n"
+        f"{format_rating('RottenTomatoes', movie['rotten-tomatoes-rating'][0])}\
+            \n"
         f"{format_rating('Metacritic', movie['metacritic-rating'][0])}\n"
         f"{format_rating('Letterboxd', movie['letterboxd-rating'][0])}\n"
         f"{format_rating('TMDb', movie['tmdb-rating'][0])}\n"
