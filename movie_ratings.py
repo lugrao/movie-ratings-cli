@@ -74,7 +74,7 @@ def get_omdb_data(imdb_id):
         url = f"http://www.omdbapi.com/?apikey={OMDB_KEY}&i={imdb_id}"
         response = requests.get(url)
         response.raise_for_status()
-    except requests.RequestException:
+    except Exception:
         return None
 
     movie = response.json()
@@ -120,7 +120,7 @@ def get_rottentomatoes_rating(title, year):
             res = requests.get(url)
             data = res.json()
             req_count += 1
-        except requests.RequestException:
+        except Exception:
             return rating
 
         if not data["movies"]:
@@ -159,7 +159,7 @@ def get_metacritic_rating(title, year):
         res = requests.get(url, headers={"User-Agent": user_agent})
         soup = BeautifulSoup(res.text, "html.parser")
         results = soup.find_all("div", class_="result_wrap")
-    except requests.RequestException:
+    except Exception:
         return ["No found", -1]
 
     for movie in results:
@@ -207,7 +207,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
     try:
         res = requests.get(url)
         soup = BeautifulSoup(res.text, "html.parser")
-    except requests.RequestException:
+    except Exception:
         return ["Not found", -1]
 
     results = soup.find_all("div", class_="se-it mt")
