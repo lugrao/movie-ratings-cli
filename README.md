@@ -5,38 +5,45 @@ A minimal CLI version of [Movie Ratings](https://movie-ratings.vercel.app/).
 ## Set up
 
 Clone repository:
+
 ```
 $ git clone https://github.com/lugrao/movie-ratings-cli.git
 ```
 
 Go to repository directory:
+
 ```
 $ cd movie-ratings-cli
 ```
 
 Install dependencies:
+
 ```
 $ pip install -r requirements.txt
 ```
 
-or with `pipenv`:
+Or with `pipenv`:
+
 ```
 $ pipenv install -r requirements.txt
 ```
 
-Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started/introduction), and your OMDB API key [here](http://www.omdbapi.com/apikey.aspx).
+Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started/introduction), 
+and your OMDB API key [here](http://www.omdbapi.com/apikey.aspx).
 
 Export them as environment variables:
+
 ```
 $ export TMDB_KEY=<your_TMDB_key>
 $ export OMDB_KEY=<your_OMDB_key>
 ```
 
-or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
+Or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
 
 ## Usage
 
 Search movie by title:
+
 ```
 $ python movie_ratings.py Rocky
 
@@ -56,6 +63,7 @@ Average rating:               7.9
 ```
 
 Search movie by title and year:
+
 ```
 $ python movie_ratings.py Batman 1989
 
@@ -75,6 +83,7 @@ Average rating:               7.1
 ```
 
 If you're using `pipenv`:
+
 ```
 $ pipenv run python movie_ratings.py 'The Godfather'
 
