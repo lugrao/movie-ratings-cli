@@ -16,12 +16,12 @@ $ cd movie-ratings-cli
 
 Install dependencies:
 ```
-$ pip install bs4 tmdbsimple
+$ pip install -r requirements.txt
 ```
 
 or with `pipenv`:
 ```
-$ pipenv install bs4 tmdbsimple
+$ pipenv install -r requirements.txt
 ```
 
 Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started/introduction), and your OMDB API key [here](http://www.omdbapi.com/apikey.aspx).
