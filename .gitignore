@@ -1,3 +1,4 @@
-env.sh
+.env
+credentials.sh
 Pipfile
 Pipfile.lock
