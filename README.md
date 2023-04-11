@@ -37,9 +37,7 @@ $ python -m pip install -r requirements.txt
 Get your TMDB API key 
 [here](https://developers.themoviedb.org/3/getting-started/introduction), 
 and your OMDB API key 
-[here](http://www.omdbapi.com/apikey.aspx).
-
-Store them inside a `.env` file:
+[here](http://www.omdbapi.com/apikey.aspx), and store them inside a `.env` file:
 
 ```
 $ echo 'TMDB_KEY=<your_TMDB_key>
