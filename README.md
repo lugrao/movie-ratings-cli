@@ -16,29 +16,33 @@ Go to repository directory:
 $ cd movie-ratings-cli
 ```
 
+Create a virtual environment:
+
+```
+$ python -m venv /path/to/new/virtual/environment
+```
+
+Activate virtual environment:
+
+```
+$ source /path/to/new/virtual/environment/bin/activate
+```
+
 Install dependencies:
 
 ```
-$ pip install -r requirements.txt
-```
-
-Or with `pipenv`:
-
-```
-$ pipenv install -r requirements.txt
+$ python -m pip install -r requirements.txt
 ```
 
 Get your TMDB API key [here](https://developers.themoviedb.org/3/getting-started/introduction), 
 and your OMDB API key [here](http://www.omdbapi.com/apikey.aspx).
 
-Export them as environment variables:
+Store them inside a `.env` file:
 
 ```
-$ export TMDB_KEY=<your_TMDB_key>
-$ export OMDB_KEY=<your_OMDB_key>
+$ echo 'TMDB_KEY=<your_TMDB_key>
+OMDB_KEY=<your_OMDB_key>' > .env
 ```
-
-Or simply store them in `TMDB_KEY` and `OMDB_KEY` at lines 10 and 11 of `movie_ratings.py`.
 
 ## Usage
 
@@ -80,24 +84,4 @@ TMDb rating:               7.2/10
 FilmAffinity rating:       6.8/10
 
 Average rating:               7.1
-```
-
-If you're using `pipenv`:
-
-```
-$ pipenv run python movie_ratings.py 'The Godfather'
-
-Searching for "The Godfather"...
-
-
-The Godfather (1972)
-
-IMDb rating:               9.2/10
-RottenTomatoes rating:        97%
-Metacritic rating:        100/100
-Letterboxd rating:          4.5/5
-TMDb rating:               8.7/10
-FilmAffinity rating:       9.0/10
-
-Average rating:               9.3
 ```

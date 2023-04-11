@@ -1,4 +1,2 @@
 .env
-credentials.sh
-Pipfile
-Pipfile.lock
+venv
