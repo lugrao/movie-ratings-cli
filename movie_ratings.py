@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import re
 import requests
+import sys
 import tmdbsimple as tmdb
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
+
+load_dotenv()
 
 TMDB_KEY = os.environ.get("TMDB_KEY")
 OMDB_KEY = os.environ.get("OMDB_KEY")
