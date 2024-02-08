@@ -137,7 +137,7 @@ def get_rottentomatoes_rating(title, year):
 
 
 def get_metacritic_rating(title, year):
-    url = f"https://www.metacritic.com/search/movie/{title}/results"
+    url = f"https://www.metacritic.com/search/{title}/"
     rating = None
     user_agent = (
         "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
@@ -145,25 +145,34 @@ def get_metacritic_rating(title, year):
     )
 
     if not year:
-        return ["No found", -1]
+        return ["Not found", -1]
 
     try:
         res = requests.get(url, headers={"User-Agent": user_agent})
         soup = BeautifulSoup(res.text, "html.parser")
-        results = soup.find_all("div", class_="result_wrap")
-    except Exception:
-        return ["No found", -1]
+        movies = soup.find_all(
+            "a",
+            class_=lambda css_class: css_class is not None
+            and css_class in "c-pageSiteSearch-results-item",
+        )
+    except Exception as e:
+        print(e)
+        return ["Not found", -1]
 
-    for movie in results:
-        t = movie.a.text.strip()
-        y = movie.p.text.strip()[-4:]
-        if t == title and y == year:
-            rating = movie.span.text
+    for movie in movies:
+        t = movie.find("p").text.strip().lower()
+        y = movie.find_all("span")[2].text.strip()
+        is_movie = "movie" == movie.find_all("span")[0].text.strip().lower()
+
+        if t == title.lower() and y == year and is_movie:
+            rating = movie.find_all("span")[-1].text.strip()
+            movie_url = f"https://www.metacritic.com{movie['href']}"
             break
 
     try:
         return [f"{rating}/100", float(rating) / 10]
-    except Exception:
+    except Exception as e:
+        print(e)
         return ["Not found", -1]
 
 
