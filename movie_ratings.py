@@ -272,7 +272,18 @@ def main():
     year = ""
 
     if len(sys.argv) == 3:
-        year = sys.argv[2]
+        try:
+            year = sys.argv[2]
+            int(year)
+        except ValueError:
+            print(
+                "\nError: The second input must be a number.\n\n"
+                "If the movie title has more than one word, try enclosing it "
+                "in quotes.\n"
+                "\n\nUsage: movie_ratings.py <movie_title> [<release_year>]\n"
+            )
+
+            sys.exit(1)
         print(f'\nSearching for "{title} {year}"...')
     else:
         print(f'\nSearching for "{title}"...')
