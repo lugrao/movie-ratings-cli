@@ -264,8 +264,18 @@ def format_rating(site, rating):
 
 
 def main():
+    usage_message = (
+            "Usage:\n"
+            '  python movie_ratings.py title [year]\n'
+            "\nExamples:\n"
+            "  python movie_ratings.py Zerkalo\n"
+            '  python movie_ratings.py "Poor Things"\n'
+            "  python movie_ratings.py 'Nueve reinas' 2000\n"
+            '  python movie_ratings.py Mononoke\ Hime 1997\n'
+    )
+
     if len(sys.argv) not in [2, 3]:
-        print("\nUsage: movie_ratings.py <movie_title> [<release_year>]\n")
+        print(usage_message)
         sys.exit(1)
 
     title = sys.argv[1]
@@ -280,10 +290,8 @@ def main():
         except ValueError:
             print(
                 "\nError: The second input must be a four digit number.\n\n"
-                "If the movie title has more than one word, try enclosing it "
-                "in quotes.\n"
-                "\n\nUsage: movie_ratings.py <movie_title> [<release_year>]\n"
             )
+            print(usage_message)
 
             sys.exit(1)
         print(f'\nSearching for "{title} {year}"...')
