@@ -275,9 +275,11 @@ def main():
         try:
             year = sys.argv[2]
             int(year)
+            if len(year) != 4:
+                raise ValueError
         except ValueError:
             print(
-                "\nError: The second input must be a number.\n\n"
+                "\nError: The second input must be a four digit number.\n\n"
                 "If the movie title has more than one word, try enclosing it "
                 "in quotes.\n"
                 "\n\nUsage: movie_ratings.py <movie_title> [<release_year>]\n"
