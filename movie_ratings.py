@@ -62,12 +62,14 @@ def get_movie(title="", year="", tmdb_id="", imdb_id=""):
         "metacritic-rating": metacritic_rating,
         "letterboxd-rating": letterboxd_rating,
         "tmdb-id": movie_id,
-        "tmdb-rating": [
-            str(movie["vote_average"]) + "/10",
-            float(movie["vote_average"]),
-        ]
-        if movie["vote_count"] > 0
-        else ["Not found", -1],
+        "tmdb-rating": (
+            [
+                str(movie["vote_average"]) + "/10",
+                float(movie["vote_average"]),
+            ]
+            if movie["vote_count"] > 0
+            else ["Not found", -1]
+        ),
         "filmaffinity-rating": filmaffinity_rating,
     }
 
@@ -126,7 +128,7 @@ def get_rottentomatoes_rating(title, year):
         movie_name = movie.find_all("a")[-1].text.strip()
         movie_score = movie.attrs["tomatometerscore"]
         release_year = movie.attrs["releaseyear"]
-        
+
         if movie_name == title and release_year == year:
             rating = [f"{movie_score}%", float(movie_score) / 10]
             break
@@ -137,8 +139,10 @@ def get_rottentomatoes_rating(title, year):
 def get_metacritic_rating(title, year):
     url = f"https://www.metacritic.com/search/movie/{title}/results"
     rating = None
-    user_agent = ("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
-                  "(KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37")
+    user_agent = (
+        "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 "
+        "(KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.37"
+    )
 
     if not year:
         return ["No found", -1]
@@ -186,8 +190,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         title = re.sub(r"[\(\[].*?[\)\]]|[^a-z0-9]", "", title)
         return title
 
-    url = ("https://www.filmaffinity.com/en/search.php?stype=title"
-           f"&stext={title}")
+    url = "https://www.filmaffinity.com/en/search.php?stype=title" f"&stext={title}"
     rating = None
     title = clean(title)
     original_title = clean(original_title)
@@ -207,8 +210,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
                 y = movie.find("div", class_="ye-w").text
                 titles = [title, original_title]
 
-                if (clean(t) in titles
-                        or t in alternative_titles) and y == year:
+                if (clean(t) in titles or t in alternative_titles) and y == year:
                     rating = movie.find("div", class_="avgrat-box").text
                     break
         except Exception:
@@ -216,25 +218,19 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
     else:
         try:
             t = soup.find_all("h1", {"id": "main-title"})[0].text
-            ot = clean(
-                soup.find_all("dl", class_="movie-info")[0].dd.contents[0]
-            )
+            ot = clean(soup.find_all("dl", class_="movie-info")[0].dd.contents[0])
             y = soup.find_all("dd", {"itemprop": "datePublished"})[0].text
             titles = [clean(t), ot]
             try:
-                for i in soup.find_all("dd", class_="akas")[0]\
-                        .ul.find_all("li"):
+                for i in soup.find_all("dd", class_="akas")[0].ul.find_all("li"):
                     titles.append(clean(i.text))
             except Exception:
                 pass
 
             if year == y and (
-                title in titles
-                or original_title in titles
-                or t in alternative_titles
+                title in titles or original_title in titles or t in alternative_titles
             ):
-                rating = soup.find_all("div", {"id": "movie-rat-avg"})[0]\
-                    .text.strip()
+                rating = soup.find_all("div", {"id": "movie-rat-avg"})[0].text.strip()
         except Exception:
             pass
 
@@ -255,7 +251,7 @@ def get_average_rating(movie):
 
     if rating_count > 0:
         return round(rating_sum / rating_count, 1)
-    return 'No rating'
+    return "No rating"
 
 
 def format_rating(site, rating):
@@ -265,13 +261,13 @@ def format_rating(site, rating):
 
 def main():
     usage_message = (
-            "Usage:\n"
-            '  python movie_ratings.py title [year]\n'
-            "\nExamples:\n"
-            "  python movie_ratings.py Zerkalo\n"
-            '  python movie_ratings.py "Poor Things"\n'
-            "  python movie_ratings.py 'Nueve reinas' 2000\n"
-            '  python movie_ratings.py Mononoke\ Hime 1997\n'
+        "Usage:\n"
+        "  python movie_ratings.py title [year]\n"
+        "\nExamples:\n"
+        "  python movie_ratings.py Zerkalo\n"
+        '  python movie_ratings.py "Poor Things"\n'
+        "  python movie_ratings.py 'Nueve reinas' 2000\n"
+        "  python movie_ratings.py Mononoke\ Hime 1997\n"
     )
 
     if len(sys.argv) not in [2, 3]:
@@ -288,9 +284,7 @@ def main():
             if len(year) != 4:
                 raise ValueError
         except ValueError:
-            print(
-                "\nError: The second input must be a four digit number.\n\n"
-            )
+            print("\nError: The second input must be a four digit number.\n\n")
             print(usage_message)
 
             sys.exit(1)
