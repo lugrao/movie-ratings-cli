@@ -109,42 +109,26 @@ def get_omdb_data(imdb_id):
 
 def get_rottentomatoes_rating(title, year):
     rating = ["Not found", -1]
+    movie_url = f"https://www.rottentomatoes.com/search?search={title}"
 
     if not year:
         return rating
 
-    req_count = 0
-    while req_count < 3:
-        next_page = ""
-        url = ("https://www.rottentomatoes.com/napi/search/all?type=movie"
-               f"&searchQuery={title}&after={next_page}")
+    try:
+        res = requests.get(movie_url)
+        soup = BeautifulSoup(res.text, "html.parser")
+        movies = soup.find_all(type="movie")[0].find_all("search-page-media-row")
+    except Exception as e:
+        print(e)
+        return rating
 
-        try:
-            res = requests.get(url)
-            data = res.json()
-            req_count += 1
-        except Exception:
-            return rating
+    for movie in movies:
+        movie_name = movie.find_all("a")[-1].text.strip()
+        movie_score = movie.attrs["tomatometerscore"]
+        release_year = movie.attrs["releaseyear"]
         
-
-        if not data["movie"]:
-            break
-
-        for movie in data["movie"]["items"]:
-            try:
-                if movie["name"] == title and movie["releaseYear"] == year:
-                    if movie["tomatometerScore"]:
-                        rating = movie["tomatometerScore"]["score"]
-                        rating = [f"{rating}%", float(rating) / 10]
-                    break
-            except Exception:
-                continue
-
-        if not data["movie"]["pageInfo"]["endCursor"]:
-            break
-        next_page = data["movie"]["pageInfo"]["endCursor"]
-
-        if rating:
+        if movie_name == title and release_year == year:
+            rating = [f"{movie_score}%", float(movie_score) / 10]
             break
 
     return rating
