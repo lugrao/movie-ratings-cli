@@ -124,14 +124,17 @@ def get_rottentomatoes_rating(title, year):
         print(e)
         return rating
 
-    for movie in movies:
-        movie_name = movie.find_all("a")[-1].text.strip()
-        movie_score = movie.attrs["tomatometerscore"]
-        release_year = movie.attrs["releaseyear"]
+    try:
+        for movie in movies:
+            movie_name = movie.find_all("a")[-1].text.strip()
+            movie_score = movie.attrs["tomatometerscore"]
+            release_year = movie.attrs["releaseyear"]
 
-        if movie_name == title and release_year == year:
-            rating = [f"{movie_score}%", float(movie_score) / 10]
-            break
+            if movie_name == title and release_year == year:
+                rating = [f"{movie_score}%", float(movie_score) / 10]
+                break
+    except Exception:
+        pass
 
     return rating
 
