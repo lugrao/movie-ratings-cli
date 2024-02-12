@@ -199,7 +199,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         title = re.sub(r"[\(\[].*?[\)\]]|[^a-z0-9]", "", title)
         return title
 
-    url = "https://www.filmaffinity.com/en/search.php?stype=title" f"&stext={title}"
+    url = f"https://www.filmaffinity.com/en/search.php?stype=title&stext={title}"
     rating = None
     title = clean(title)
     original_title = clean(original_title)
