@@ -175,7 +175,6 @@ def get_metacritic_rating(title, year):
     try:
         return [f"{rating}/100", float(rating) / 10]
     except Exception as e:
-        print(e)
         return ["Not found", -1]
 
 
