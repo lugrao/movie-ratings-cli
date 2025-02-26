@@ -201,7 +201,7 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
         title = re.sub(r"[\(\[].*?[\)\]]|[^a-z0-9]", "", title)
         return title
 
-    url = f"https://www.filmaffinity.com/en/search.php?stype=title&stext={title}"
+    url = f"https://www.filmaffinity.com/en/search.php?stext={title}"
     rating = None
     title = clean(title)
     original_title = clean(original_title)
@@ -212,17 +212,17 @@ def get_filmaffinity_rating(title, original_title, alternative_titles, year):
     except Exception:
         return ["Not found", -1]
 
-    results = soup.find_all("div", class_="se-it mt")
+    results = soup.find_all("li", class_="se-it")
 
     if results:
         try:
             for movie in results:
-                t = movie.find_all("a")[1].get("title").strip()
-                y = movie.find("div", class_="ye-w").text
+                t = movie.find_all("div", class_="mc-title")[0].a.text.strip()
+                y = movie.find_all("span", class_="mc-year")[0].text.strip()
                 titles = [title, original_title]
 
                 if (clean(t) in titles or t in alternative_titles) and y == year:
-                    rating = movie.find("div", class_="avgrat-box").text
+                    rating = movie.find("div", class_="avg").text.strip()
                     break
         except Exception:
             pass
@@ -278,7 +278,7 @@ def main():
         "  python movie_ratings.py Zerkalo\n"
         '  python movie_ratings.py "Poor Things"\n'
         "  python movie_ratings.py 'Nueve reinas' 2000\n"
-        "  python movie_ratings.py Mononoke\ Hime 1997\n"
+        "  python movie_ratings.py Mononoke\\ Hime 1997\n"
     )
 
     if len(sys.argv) not in [2, 3]:
